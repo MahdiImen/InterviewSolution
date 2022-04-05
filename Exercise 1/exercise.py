@@ -1,10 +1,23 @@
 #!/usr/bin/env python3
 
 
-def sonar(filename):
-    # TODO
-    return 0
+def generator(filename):
+    with open(filename) as f:   #Open the file and read each line
+        for line in f:
+            yield int(line.strip('\n')) #retrieve each depth measurement one at a time
 
+def sonar(filename):
+    gen = generator(filename)   #Create a generator to retrieve the depth measurements 
+    value_1 = next(gen)         #Get First measurement in the file
+    n=0                         #Initialize counter to 0
+    try:                        
+        while(True):
+            value_2 = next(gen) #Get the new measurement
+            if value_2>value_1 :#If the new measurement is bigger
+                n += 1          #We increase the counter
+            value_1 = value_2      
+    except StopIteration:       #When the we reach the end of file, the generator raises a StopIteration. 
+        return int(n)           #We then return the number obtained
 
 def main():
     with open("output.txt") as f:
