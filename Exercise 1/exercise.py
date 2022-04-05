@@ -4,7 +4,7 @@
 def generator(filename):
     with open(filename) as f:   #Open the file and read each line
         for line in f:
-            yield int(line.strip('\n')) #retrieve each depth measurement one at a time
+            yield int(line.strip('')) #retrieve each depth measurement one at a time
 
 def sonar(filename):
     gen = generator(filename)   #Create a generator to retrieve the depth measurements 
