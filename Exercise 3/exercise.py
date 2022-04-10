@@ -4,18 +4,21 @@ import numpy as np
 def initial_lanternfish(filename):
     filedata = np.genfromtxt(filename , delimiter=',')
     filedata = filedata.astype('int64')
-    l = [filedata[filedata == i].shape[0] for i in range(9)]
-    return (l)
+    initial_fish_distribution = [filedata[filedata == i].shape[0] for i in range(9)] #Fish distrubution by days left till giving birth ranging from 0 to 8
+    return (initial_fish_distribution)
 
 
 def lanternfish(filename, days):
-  family = initial_lanternfish(filename)
-  for day in range(days):
-    new_born = family[0]
-    family = np.hstack((family[1:],np.zeros(1,dtype='int64')))
-    family[6] += new_born
-    family[8] += new_born
-  return family.sum()
+    #Get the initial distribution of lanternfish by age
+    fish_distribution = initial_lanternfish(filename) 
+    for day in range(days):
+        #Number of new born fish: For each fish of age 0 one more fish will be born
+        new_born = fish_distribution[0]
+        #New distribution :
+        fish_distribution = np.hstack((fish_distribution[1:],np.zeros(1,dtype='int64')))
+        fish_distribution[6] += new_born #Fish that gave birth will now return to 6
+        fish_distribution[8] += new_born #New born fish start at 8
+    return fish_distribution.sum()
 
 
 def main():
