@@ -1,47 +1,29 @@
 #!/usr/bin/env python3
+import numpy as np
 
-def initial_lanternfish_list(filename):
-    with open(filename) as f:                           #Open the file and read the line
-        lanternfishs = f.readline().strip().split(',')  
-    return list(map(int, lanternfishs))                 #Return a list with the initial lanternfish list
-
-#The following recursive function will calculate the 
-#number of grandchildren of one fish of age 6 after
-# a given number of days 
-def grandchildren(days_left): 
-  if days_left < 7:
-    return 0
-  fish_born = 0
-  for i in range(days_left//7):
-    fish_born += grandchildren(days_left-2-(i+1)*7)
-  return fish_born + (days_left // 7)
+def initial_lanternfish(filename):
+    filedata = np.genfromtxt(filename , delimiter=',')
+    filedata = filedata.astype('int64')
+    l = [filedata[filedata == i].shape[0] for i in range(9)]
+    return (l)
 
 
-def lanternfish(filename):
-    #Initilize the lanternfish ages and number
-    lanternfishs = initial_lanternfish_list(filename) 
-    #There are 6 ages possibles for the initial state : [0,1,2,3,4,5,6]  
-    #For each age, we will determine how much one fish at that age can
-    #have as grandchildren after 80 days
-    #PS1: The number of grandchildren of a fish of age n on day d
-    #is the same on the day d+(6-n)
-    #PS2: The function grandchildren assumes that the fish is of age 6
-    grandchildren_born = list(map(grandchildren, [86,85,84,83,82,81,80] )) 
-    #The initial number of lanternfish
-    n = len(lanternfishs)
-    #For each lanternfish in the initial list we add the total number of 
-    #its grandchildren after 80 days 
-    for fish in lanternfishs:
-        n += grandchildren_born[fish]
-    #Return the total number of lanterfish
-    return n                           
+def lanternfish(filename, days):
+  family = initial_lanternfish(filename)
+  for day in range(days):
+    new_born = family[0]
+    family = np.hstack((family[1:],np.zeros(1,dtype='int64')))
+    family[6] += new_born
+    family[8] += new_born
+  return family.sum()
+
 
 def main():
     with open("output.txt") as f:
         output = [int(x.strip()) for x in f.readlines()]
     for i, expected in enumerate(output):
         filename = f"input/input_{i + 1:02}.txt"
-        result = lanternfish(filename)
+        result = lanternfish(filename,80)
         if result == expected:
             print(f"Correct result for case {i + 1}: {result}")
         else:
